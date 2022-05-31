@@ -4,8 +4,14 @@ import Formulario from "./components/Formulario";
 import "./App.css";
 import {PokemonDataProvider} from "./context/contextoFormulario";
 
+import {QueryClient, QueryClientProvider} from 'react-query'
+
 function App() {
+
+  const queryClient = new QueryClient();
+
   return (
+    <QueryClientProvider client={queryClient}>
     <div className="App">
       <PokemonDataProvider>
       <Routes>
@@ -14,6 +20,7 @@ function App() {
       </Routes>
       </PokemonDataProvider>
     </div>
+    </QueryClientProvider>
   );
 }
 
