@@ -1,44 +1,78 @@
-import React, {useContext} from "react";
-import { PokemonData } from "../../context/contextoFormulario";
+import React, { useContext, useEffect } from "react";
+import { useMutation } from "react-query";
+import { enviarSolicitacao } from "../Api/api_post_form";
+import { ContextoFormulario } from "../../context/contextoFormulario";
 
+
+/**
+ * Componente que mostra os detalhes do fomulário
+ * @author Lucas Mendonça
+ * @returns {JSX.Element}
+ */
 
 const Detalhe = () => {
-  // Aqui devemos pegar os dados do formulário para podermos mostrá-lo em a visualização.
-  const {formulario} = useContext(PokemonData)
-  const {treinador, pokemon} = formulario
-  console.log(formulario)
-  
+  //hook useMutation para enviar solicitação ao fomulário
+  const { data, isLoading, isError, mutate, isSuccess } = useMutation(enviarSolicitacao);
+
+  /**  Utilizando o ContextoFormulario pegamos os dados do formulário para podermos mostrá-lo em a visualização.*/
+  const { formulario } = useContext(ContextoFormulario);
+
+/** Dessa forma conseguimos criar os objetos treinador e pokemon  */
+  const { 
+    nome,
+    apelido,
+    email 
+  } = formulario?.treinador;
+
+  const {
+    nomePokemon,
+    tipoPokemon,
+    elementoPokemon,
+    alturaPokemon,
+    idadePokemon,
+    especiePokemon,
+  } = formulario?.pokemon;
+
+  //utilizamos o useEffect para exibir um alerta caso isSucess ou isError for true
+  useEffect(() => {
+    if(isSuccess) {
+      alert("Formulário enviado com sucesso!")
+    } else if (isError) {
+      alert("Error ao enviar Formulário")
+    }
+  }, [isSuccess, data, isError])
+
   return (
     <div className="detalhe-formulario">
       <div className="cabecalho">
-        <h3>Vista prévia da solicitação</h3>
+        <h3>Vista prévia da soliticação</h3>
       </div>
       <section className="dados-cliente">
         <h4>Dados do Treinador</h4>
         <div className="lista">
-          <p>Nome: {treinador?.nome}</p>
-          <p>Sobrenome: {treinador?.sobrenome}</p>
-          <p>Email: {treinador?.email}</p>
+          <p>Nome: {nome}</p>
+          <p>Sobrenome: {apelido}</p>
+          <p>Email: {email}</p>
         </div>
       </section>
       <section className="dados-cliente">
         <h4>Dados do Pokémon</h4>
         <div className="lista">
-          <p>Nome: {pokemon?.nomePokemon}</p>
-          <p>Tipo: {pokemon?.tipoPokemon}</p>
-          <p>Elemento: {pokemon?.elementoPokemon}</p>
-          <p>Altura: {pokemon?.alturaPokemon}</p>
-          <p>Idade: {pokemon?.idadePokemon}</p>
+          <p>Nome: {nomePokemon}</p>
+          <p>Tipo: {tipoPokemon}</p>
+          <p>Elemento: {elementoPokemon}</p>
+          <p>Altura: {alturaPokemon}</p>
+          <p>Idade: {idadePokemon}</p>
+          <p>Especie: {especiePokemon}</p>
         </div>
       </section>
-      <button
-        className="botao-enviar"
-        onClick={() => alert("Solicitação enviada :)")}
-      >
-        Enviar Solicitação
+      <button className="botao-enviar" onClick={() => mutate(formulario)}>
+        {isLoading ? "Enviando formulario..." : "Enviar Solicitação"}
       </button>
     </div>
   );
 };
 
 export default Detalhe;
+
+
